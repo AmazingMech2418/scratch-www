@@ -176,5 +176,18 @@ dl {
     background-color: $background-color;
     padding: 20px 0;
     min-width: 100%;
-    min-height: 680px;
+    min-height: 80%;
+}
+
+html, body, #app, .page {
+    height: 100%;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+}
+
+.hidden {
+    display: none;
 }
