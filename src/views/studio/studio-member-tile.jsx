@@ -51,7 +51,7 @@ function useAnimation() {
 
 
   const animate = () => {
-    const to = {x: 0, y: 97};
+    const to = {x: 100, y: 100};
     const dx = to.x - xRef.current;
     const dy = to.y - yRef.current;
 
