@@ -8,8 +8,11 @@ import overflowIcon from './overflow-icon.svg';
 
 import './overflow-menu.scss';
 
-const OverflowMenu = ({children, dropdownAs, className}) => {
+const OverflowMenu = ({children, dropdownAs, className, closeMenu}) => {
     const [open, setOpen] = useState(false);
+
+    if(closeMenu && open) setOpen(false);
+
     return (
         <div className={classNames('overflow-menu-container', className)}>
             <button
