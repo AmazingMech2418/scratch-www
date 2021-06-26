@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-no-bind */
-import React, {useState} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import classNames from 'classnames';
@@ -25,6 +25,58 @@ import OverflowMenu from '../../components/overflow-menu/overflow-menu.jsx';
 import removeIcon from './icons/remove-icon.svg';
 import promoteIcon from './icons/curator-icon.svg';
 
+function useAnimation() {
+  const animationRef = useRef();
+  const xRef = useRef();
+  const yRef = useRef();
+  const widthRef = useRef();
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
+  const [width, setWidth] = useState(0);
+  const [animating, setAnimating] = useState(false);
+
+  const stateRefs = useRef();
+  stateRefs.current = {x, y};
+
+  useEffect(() => {
+      xRef.current = animationRef.current.offsetLeft;
+      yRef.current = animationRef.current.offsetTop;
+      widthRef.current = animationRef.current.offsetWidth;
+      window.addEventListener("resize", () => {
+          xRef.current = animationRef.current.offsetLeft;
+          yRef.current = animationRef.current.offsetTop;
+          widthRef.current = animationRef.current.offsetWidth;
+      });
+  })
+
+
+  const animate = () => {
+    const to = {x: 100, y: 100};
+    const dx = to.x - xRef.current;
+    const dy = to.y - yRef.current;
+
+    setX(xRef.current);
+    setY(yRef.current);
+    setWidth(widthRef.current)
+    setAnimating(true);
+
+    let i = 0;
+    const interval = setInterval(() => {
+        const {x, y} = stateRefs.current;
+      setX(x + dx/100);
+      setY(y + dy/100);
+        if(i > 100) {
+          clearInterval(interval);
+          setAnimating(false);
+        }
+        i++
+    }, 10);
+  }
+
+  return {animationRef, pos: {x, y, width}, animating, animate};
+}
+
+
 const StudioMemberTile = ({
     canRemove, canPromote, onRemove, onPromote, isCreator, hasReachedManagerLimit, // mapState props
     username, image // own props
@@ -33,9 +85,43 @@ const StudioMemberTile = ({
     const [modalOpen, setModalOpen] = useState(false);
     const [managerLimitReached, setManagerLimitReached] = useState(false);
     const {errorAlert, successAlert} = useAlertContext();
+
+    const {animationRef, pos, animating, animate} = useAnimation();
+
+    const style = {};
+    const placeholderStyle = {};
+    if(animating) {
+      style.position = "absolute";
+      style.zIndex = "999";
+      style.left = pos.x;
+      style.top = pos.y;
+      style.width = pos.width;
+    } else {
+      placeholderStyle.display = "none";
+    }
+
     const userUrl = `/users/${username}`;
     return (
-        <div className="studio-member-tile">
+      <div>
+        <div className="studio-member-tile placeholder" style={placeholderStyle}>
+          <a href={userUrl}>
+              <img
+                  className="studio-member-image"
+                  src={image}
+              />
+          </a>
+          <div className="studio-member-info">
+              <a
+                  href={userUrl}
+                  className="studio-member-name"
+              >{username}</a>
+              {isCreator && <div className="studio-member-role"><FormattedMessage id="studio.creatorRole" /></div>}
+          </div>
+        </div>
+        <div className="studio-member-tile"
+          ref={animationRef}
+          style={style}
+        >
             <a href={userUrl}>
                 <img
                     className="studio-member-image"
@@ -50,7 +136,17 @@ const StudioMemberTile = ({
                 {isCreator && <div className="studio-member-role"><FormattedMessage id="studio.creatorRole" /></div>}
             </div>
             {(canRemove || canPromote) &&
-                <OverflowMenu>
+                <OverflowMenu closeMenu={animating}>
+                    {true && <li>
+                        <button
+                            onClick={() => {
+                                animate();
+                            }}
+                        >
+                            <img src={promoteIcon} />
+                            <FormattedMessage id="studio.demote" />
+                        </button>
+                    </li>}
                     {canPromote && <li>
                         <button
                             onClick={() => {
@@ -116,6 +212,7 @@ const StudioMemberTile = ({
                 )
             }
         </div>
+        </div>
     );
 };
 
@@ -132,7 +229,7 @@ StudioMemberTile.propTypes = {
 
 const ManagerTile = connect(
     (state, ownProps) => ({
-        canRemove: selectCanRemoveManager(state, ownProps.id),
+        canRemove: true, //selectCanRemoveManager(state, ownProps.id),
         canPromote: false,
         isCreator: state.studio.owner === ownProps.id
     }),
