@@ -41,17 +41,17 @@ function useAnimation() {
   useEffect(() => {
       xRef.current = animationRef.current.offsetLeft;
       yRef.current = animationRef.current.offsetTop;
-      widthRef.current = animationRef.current.offsetWidth;
+      widthRef.current = animationRef.current.offsetWidth - 20;
       window.addEventListener("resize", () => {
           xRef.current = animationRef.current.offsetLeft;
           yRef.current = animationRef.current.offsetTop;
-          widthRef.current = animationRef.current.offsetWidth;
+          widthRef.current = animationRef.current.offsetWidth - 20;
       });
   })
 
 
   const animate = () => {
-    const to = {x: 100, y: 100};
+    const to = {x: 0, y: 97};
     const dx = to.x - xRef.current;
     const dy = to.y - yRef.current;
 
