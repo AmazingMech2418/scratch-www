@@ -32,6 +32,7 @@ function useAnimation() {
   const widthRef = useRef();
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
+  const [scale, setScale] = useState(1);
   const [width, setWidth] = useState(0);
   const [animating, setAnimating] = useState(false);
 
@@ -65,6 +66,7 @@ function useAnimation() {
         const {x, y} = stateRefs.current;
       setX(x + dx/100);
       setY(y + dy/100);
+      setScale(1 + (50 - Math.abs(i - 50)) / 200);
         if(i > 100) {
           clearInterval(interval);
           setAnimating(false);
@@ -73,7 +75,7 @@ function useAnimation() {
     }, 10);
   }
 
-  return {animationRef, pos: {x, y, width}, animating, animate};
+  return {animationRef, pos: {x, y, width, scale}, animating, animate};
 }
 
 
@@ -96,6 +98,7 @@ const StudioMemberTile = ({
       style.left = pos.x;
       style.top = pos.y;
       style.width = pos.width;
+      style.transform = `scale(${pos.scale})`;
     } else {
       placeholderStyle.display = "none";
     }
