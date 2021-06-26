@@ -147,7 +147,7 @@ $radius: 8px;
         }
 
     }
-    
+
     /* Overrides for when title and description are editable textareas. These override inplace-input */
     textarea.studio-title, textarea.studio-description {
         padding: 5px 8px;
@@ -241,14 +241,14 @@ $radius: 8px;
 
     border: 1px solid $ui-blue;
     border-radius: 1rem;
-    
+
     font-weight: bold;
     color: $ui-blue;
     font-size: 12px;
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
 }
 
 .manager-threshold-message {
@@ -649,4 +649,8 @@ $radius: 8px;
 
 .studio-curator-mute-box {
     margin: 20px 0;
+}
+
+.placeholder {
+  visibility: hidden;
 }
